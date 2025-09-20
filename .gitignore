@@ -1,3 +1,9 @@
+# Environment files
+.env
+.env.local
+.env.production
+.env.development
+
 # Go
 *.exe
 *.exe~
@@ -11,6 +17,7 @@ go.work
 # Frontend
 frontend/node_modules/
 frontend/build/
+frontend/.env
 frontend/.env.local
 frontend/.env.development.local
 frontend/.env.test.local
@@ -21,6 +28,7 @@ frontend/yarn-error.log*
 
 # Docker
 .dockerignore
+postgres_data/
 
 # IDEs
 .vscode/
@@ -39,3 +47,4 @@ Thumbs.db
 
 # Logs
 *.log
+logs/

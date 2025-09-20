@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"library-management/internal/database"
+	"library-management/internal/logger"
 	"library-management/internal/models"
 	"net/http"
 	"strconv"
@@ -28,23 +29,48 @@ type SuccessResponse struct {
 }
 
 func (h *BookHandler) CreateBook(w http.ResponseWriter, r *http.Request) {
+	log := logger.WithFields(map[string]interface{}{
+		"handler": "CreateBook",
+		"method":  r.Method,
+		"path":    r.URL.Path,
+	})
+
+	log.Info("Creating new book")
+
 	var req models.CreateBookRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		log.WithError(err).Error("Failed to decode request body")
 		h.sendErrorResponse(w, http.StatusBadRequest, "Invalid JSON format")
 		return
 	}
 
 	// Basic validation
 	if req.Title == "" || req.Author == "" || req.ISBN == "" {
+		log.WithFields(map[string]interface{}{
+			"title":  req.Title,
+			"author": req.Author,
+			"isbn":   req.ISBN,
+		}).Warn("Validation failed: missing required fields")
 		h.sendErrorResponse(w, http.StatusBadRequest, "Title, author, and ISBN are required")
 		return
 	}
 
 	book, err := h.db.CreateBook(&req)
 	if err != nil {
+		log.WithError(err).WithFields(map[string]interface{}{
+			"title":  req.Title,
+			"author": req.Author,
+			"isbn":   req.ISBN,
+		}).Error("Failed to create book in database")
 		h.sendErrorResponse(w, http.StatusInternalServerError, "Failed to create book: "+err.Error())
 		return
 	}
+
+	log.WithFields(map[string]interface{}{
+		"book_id": book.ID,
+		"title":   book.Title,
+		"author":  book.Author,
+	}).Info("Book created successfully")
 
 	h.sendSuccessResponse(w, http.StatusCreated, "Book created successfully", book)
 }

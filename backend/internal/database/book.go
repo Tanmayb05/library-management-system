@@ -3,8 +3,8 @@ package database
 import (
 	"database/sql"
 	"fmt"
+	"library-management/internal/logger"
 	"library-management/internal/models"
-	"log"
 	"os"
 
 	_ "github.com/lib/pq"
@@ -34,7 +34,13 @@ func NewDB() (*DB, error) {
 		return nil, fmt.Errorf("failed to ping database: %w", err)
 	}
 
-	log.Println("Successfully connected to database")
+	logger.WithFields(map[string]interface{}{
+		"host": host,
+		"port": port,
+		"user": user,
+		"dbname": dbname,
+		"sslmode": sslmode,
+	}).Info("Successfully connected to database")
 	return &DB{conn: conn}, nil
 }
 
@@ -42,6 +48,14 @@ func (db *DB) Close() {
 	if db.conn != nil {
 		db.conn.Close()
 	}
+}
+
+// Ping verifies the database connection is still alive
+func (db *DB) Ping() error {
+	if db.conn == nil {
+		return fmt.Errorf("database connection is nil")
+	}
+	return db.conn.Ping()
 }
 
 // Book CRUD operations
