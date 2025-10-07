@@ -106,10 +106,17 @@ library-management/
 
 ### Step 3: Build and Run the Application
 
-From the root directory (`library-management/`), run:
+From the root directory (`library-management/`), choose the appropriate command based on your platform:
 
+#### For Local Development (Mac/Windows/Linux - Native Architecture)
 ```bash
-# Build and start all services
+# Build and start all services with native architecture
+docker-compose -f docker-compose.local.yml up --build
+```
+
+#### For Azure Deployment (x86-64/amd64 Architecture)
+```bash
+# Build and start all services for Azure (x86-64)
 docker-compose up --build
 ```
 
@@ -121,6 +128,10 @@ This command will:
 5. Start all services
 
 **Note:** The first time you run this, it will take several minutes to download and build everything.
+
+**Important:**
+- Use `docker-compose.local.yml` for faster local development (uses your native architecture)
+- Use `docker-compose.yml` when building for Azure deployment (uses linux/amd64)
 
 ### Step 4: Wait for Services to Start
 
@@ -226,10 +237,15 @@ docker-compose up --build
 To stop all services:
 
 ```bash
-# Stop services (keeps data)
+# For local development
+docker-compose -f docker-compose.local.yml down
+
+# For Azure build
 docker-compose down
 
-# Stop services and remove all data
+# Stop services and remove all data (add -v flag)
+docker-compose -f docker-compose.local.yml down -v
+# or
 docker-compose down -v
 ```
 
