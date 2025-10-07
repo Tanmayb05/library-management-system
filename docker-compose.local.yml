@@ -1,7 +1,6 @@
 services:
   postgres:
     image: postgres:15-alpine
-    platform: linux/amd64
     container_name: library_postgres
     environment:
       POSTGRES_DB: ${DB_NAME:-librarydb}
@@ -22,7 +21,6 @@ services:
 
   backend:
     build: ./backend
-    platform: linux/amd64
     container_name: library_backend
     ports:
       - "${PORT:-8080}:${PORT:-8080}"
@@ -47,7 +45,6 @@ services:
 
   frontend:
     build: ./frontend
-    platform: linux/amd64
     container_name: library_frontend
     ports:
       - "3000:80"
